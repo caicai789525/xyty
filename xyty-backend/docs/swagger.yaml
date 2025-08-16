@@ -576,4 +576,21 @@ paths:
       summary: 添加视频观看记录
       tags:
       - user
+  /user/videos:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  items:
+                    type: string
+                  type: array
+              type: object
+      summary: 获取所有视频列表
+      tags:
+      - user
 swagger: "2.0"

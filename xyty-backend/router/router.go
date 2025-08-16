@@ -25,7 +25,6 @@ func RouterInit() *gin.Engine {
 	userGroup := e.Group("api/v1/user")
 	userGroup.Use(middleware.Auth()) // 需要认证
 	{
-		userGroup.GET("/videos", user.GetAllVideos)
 		userGroup.GET("/profile", user.GetProfile)                  // 获取个人资料
 		userGroup.POST("/avatar", user.UpdateAvatar)                // 更新头像
 		userGroup.PUT("/password", user.ChangePassword)             // 修改密码
@@ -35,6 +34,8 @@ func RouterInit() *gin.Engine {
 		userGroup.GET("/qiniu-videos", user.GetQiniuVideos)         // 获取七牛云视频列表
 		userGroup.POST("/scenario-records", user.AddScenarioRecord) // 情景记录添加
 	}
+
+	e.Group("api/v1/user").GET("/videos", user.GetAllVideos)
 
 	e.GET("/test", func(c *gin.Context) {
 		c.JSON(200, gin.H{

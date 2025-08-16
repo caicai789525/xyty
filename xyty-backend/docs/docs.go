@@ -712,6 +712,37 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user/videos": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "获取所有视频列表",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
