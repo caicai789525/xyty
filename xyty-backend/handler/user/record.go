@@ -6,6 +6,7 @@ import (
 	model "ini/model/user_struct"
 	"ini/pkg/auth"
 	"ini/pkg/errno"
+	"ini/services/qiniu"
 	"strconv"
 	"time"
 
@@ -93,6 +94,41 @@ func AddVideoRecord(c *gin.Context) {
 	}
 
 	handler.SendGoodResponse(c, "添加视频记录成功", nil)
+}
+
+// GetQiniuVideos 获取七牛云视频列表
+// @Summary 获取七牛云视频列表
+// @Description 根据情景ID获取七牛云存储的视频文件列表
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param scenario_id query string true "情景ID"
+// @Success 200 {object} handler.Response{data=[]string}
+// @Failure 400 {object} handler.Response
+// @Failure 500 {object} handler.Response
+// @Router /api/v1/user/qiniu-videos [get]
+// @Security ApiKeyAuth
+func GetQiniuVideos(c *gin.Context) {
+	claims, err := auth.ParseRequest(c)
+	if err != nil {
+		handler.SendError(c, errno.ErrTokenInvalid, err.Error())
+		return
+	}
+
+	scenarioID := c.Query("scenario_id")
+	if scenarioID == "" {
+		handler.SendBadResponse(c, "情景ID不能为空", nil)
+		return
+	}
+
+	prefix := "drifting/" + scenarioID + "/"
+	urls, status, err := qiniu.ListFilesByPrefix(prefix)
+	if err != nil || status != 1 {
+		handler.SendError(c, "获取视频列表失败", err.Error())
+		return
+	}
+
+	handler.SendGoodResponse(c, "获取视频列表成功", urls)
 }
 
 // GetScenarioRecords 获取情景体验记录

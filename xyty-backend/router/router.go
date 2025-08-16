@@ -31,6 +31,7 @@ func RouterInit() *gin.Engine {
 		userGroup.GET("/video-records", user.GetVideoRecords)       // 获取视频记录
 		userGroup.POST("/video-records", user.AddVideoRecord)       // 添加视频记录
 		userGroup.GET("/scenario-records", user.GetScenarioRecords) // 情景记录查询
+		userGroup.GET("/qiniu-videos", user.GetQiniuVideos)         // 获取七牛云视频列表
 		userGroup.POST("/scenario-records", user.AddScenarioRecord) // 情景记录添加
 	}
 
