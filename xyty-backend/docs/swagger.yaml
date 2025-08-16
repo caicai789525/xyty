@@ -1,0 +1,541 @@
+basePath: /api/v1
+definitions:
+  Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message: {}
+    type: object
+  model.LoginU1:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  model.LoginU2:
+    properties:
+      code:
+        type: string
+      mail_addr:
+        type: string
+    type: object
+  model.ScenarioExperience:
+    description: 存储用户的情景体验记录信息
+    properties:
+      created_at:
+        description: 创建时间
+        type: string
+      deleted_at:
+        description: 软删除标记（*time.Time 兼容 GORM 软删除）
+        type: string
+      experience_date:
+        description: 体验日期
+        type: string
+      id:
+        description: 移除 gorm.Model 嵌入，显式定义所有字段
+        type: integer
+      scenario_id:
+        description: 情景ID
+        type: string
+      scenario_name:
+        description: 情景名称
+        type: string
+      score:
+        description: 评分(可选)
+        type: integer
+      updated_at:
+        description: 更新时间
+        type: string
+      username:
+        description: 用户ID
+        type: string
+    type: object
+  model.SendMailAddr:
+    properties:
+      mail_addr:
+        type: string
+    type: object
+  model.SignupUser:
+    properties:
+      mail_addr:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  model.User:
+    properties:
+      avatar:
+        description: 头像字段
+        type: string
+      created_at:
+        description: 创建时间
+        type: string
+      deleted_at:
+        description: 软删除标记（*time.Time 兼容 GORM 软删除）
+        type: string
+      id:
+        description: 移除 gorm.Model 嵌入，显式定义所有字段
+        type: integer
+      mail_addr:
+        description: 邮箱地址（主键）
+        type: string
+      password:
+        description: 密码
+        type: string
+      updated_at:
+        description: 更新时间
+        type: string
+      username:
+        description: 用户名（主键）
+        type: string
+    type: object
+  model.VideoRecord:
+    properties:
+      created_at:
+        description: 创建时间
+        type: string
+      deleted_at:
+        description: 软删除标记
+        type: string
+      id:
+        description: 主键ID
+        type: integer
+      progress:
+        description: 观看进度(百分比)
+        type: integer
+      updated_at:
+        description: 更新时间
+        type: string
+      username:
+        description: 用户ID
+        type: string
+      video_id:
+        description: 视频ID
+        type: string
+      video_name:
+        description: 视频名称
+        type: string
+      watch_date:
+        description: 观看日期
+        type: string
+      watch_time:
+        description: 观看时长(秒)
+        type: integer
+    type: object
+  user.ChangePasswordRequest:
+    properties:
+      new_password:
+        minLength: 6
+        type: string
+      old_password:
+        type: string
+    required:
+    - new_password
+    - old_password
+    type: object
+host: 8.146.198.169
+info:
+  contact:
+    email: SJMbaiyang@163.com
+    name: KitZhangYs
+  description: 芗音同韵API
+  termsOfService: http://swagger.io/terms/
+  title: oyhx API
+  version: "1.0"
+paths:
+  /api/v1/code_login:
+    post:
+      description: 通过邮箱验证码登录，验证码正确则获得token（注：该接口用于发送验证码之后）
+      parameters:
+      - description: 登录结构体
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginU2'
+      responses:
+        "200":
+          description: '{"message":"登陆成功，获得token"}'
+          schema:
+            $ref: '#/definitions/Response'
+        "400":
+          description: '{"message":"Failure"}'
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: '{"message":"Failure"}'
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 邮箱验证码登录
+      tags:
+      - login
+  /api/v1/login:
+    post:
+      consumes:
+      - application/json
+      description: 登录并获得token
+      parameters:
+      - description: 登录结构体
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginU1'
+      responses:
+        "200":
+          description: '{"message":"登陆成功，获得token"}'
+          schema:
+            $ref: '#/definitions/Response'
+        "400":
+          description: '{"message":"Failure"}'
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: '{"message":"Failure"}'
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 账号密码登录
+      tags:
+      - login
+  /api/v1/send_mail:
+    post:
+      description: 向用户提供的邮箱地址发送一个验证码
+      parameters:
+      - description: 邮箱地址
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/model.SendMailAddr'
+      responses:
+        "200":
+          description: '{"message":"登陆成功，获得token"}'
+          schema:
+            $ref: '#/definitions/Response'
+        "400":
+          description: '{"message":"Failure"}'
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: '{"message":"Failure"}'
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 发送邮箱验证码
+      tags:
+      - login
+  /api/v1/signup:
+    post:
+      description: 新用户进行注册
+      parameters:
+      - description: 用户信息
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/model.SignupUser'
+      responses:
+        "200":
+          description: '{"message":"注册成功"}'
+          schema:
+            $ref: '#/definitions/Response'
+        "400":
+          description: '{"message":"Failure"}'
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: '{"message":"Failure"}'
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 新用户注册
+      tags:
+      - signup
+  /api/v1/upload/video:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 上传视频文件
+      parameters:
+      - description: 视频文件
+        in: formData
+        name: video
+        required: true
+        type: file
+      - description: 情景ID
+        in: formData
+        name: scenario_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 上传视频
+      tags:
+      - upload
+  /api/v1/user/avatar:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 更新当前登录用户的头像
+      parameters:
+      - description: 用户头像
+        in: formData
+        name: avatar
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 更新用户头像
+      tags:
+      - user
+  /api/v1/user/password:
+    put:
+      consumes:
+      - application/json
+      description: 修改当前登录用户的密码
+      parameters:
+      - description: 修改密码请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 修改密码
+      tags:
+      - user
+  /api/v1/user/profile:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前登录用户的个人资料
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取用户个人资料
+      tags:
+      - user
+  /api/v1/user/scenario-records:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前登录用户的情景体验记录
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页条数
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.ScenarioExperience'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取情景体验记录
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: 添加当前登录用户的情景体验记录
+      parameters:
+      - description: 情景体验记录信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.ScenarioExperience'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 添加情景体验记录
+      tags:
+      - user
+  /api/v1/user/video-records:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前登录用户的视频观看记录
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页条数
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.VideoRecord'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取视频观看记录
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: 添加视频观看记录
+      parameters:
+      - description: 视频记录信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.VideoRecord'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 添加视频观看记录
+      tags:
+      - user
+swagger: "2.0"

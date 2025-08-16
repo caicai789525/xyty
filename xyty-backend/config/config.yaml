@@ -1,0 +1,18 @@
+db:
+  username: root
+  password: 123456
+  addr: localhost
+  port: 3306
+  dbname: xyty
+
+mail:
+  addr: xytyTeam@163.com
+  password: xytyTeam789525
+  auth_code: WLi7BYeydXgMHQHx
+  smtp_addr: smtp.163.com
+
+qiniu:
+  AccessKey: GRsClS7z_4P9nHfc7I-iYLdiKZ4xu204V9OOJNsI
+  SerectKey: wUJ-hAztt5LUkl-2TZSfDo-0NhE53S1CNxMl9bi9
+  Bucket: xyty
+  ImgUrl: http://t0yy8qojh.hn-bkt.clouddn.com/
