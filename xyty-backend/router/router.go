@@ -25,6 +25,7 @@ func RouterInit() *gin.Engine {
 	userGroup := e.Group("api/v1/user")
 	userGroup.Use(middleware.Auth()) // 需要认证
 	{
+		userGroup.GET("/videos", user.GetAllVideos)
 		userGroup.GET("/profile", user.GetProfile)                  // 获取个人资料
 		userGroup.POST("/avatar", user.UpdateAvatar)                // 更新头像
 		userGroup.PUT("/password", user.ChangePassword)             // 修改密码

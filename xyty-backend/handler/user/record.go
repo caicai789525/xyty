@@ -7,6 +7,7 @@ import (
 	"ini/pkg/auth"
 	"ini/pkg/errno"
 	"ini/services/qiniu"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -214,4 +215,22 @@ func AddScenarioRecord(c *gin.Context) {
 	}
 
 	handler.SendGoodResponse(c, "添加情景体验记录成功", nil)
+}
+
+// @Summary 获取所有视频列表
+// @Tags user
+// @Success 200 {object} handler.Response{data=[]string}
+// @Router /user/videos [get]
+func GetAllVideos(c *gin.Context) {
+	// 无需权限验证，直接查询所有视频
+	urls, _, err := qiniu.ListFilesByPrefix("")
+	if err != nil {
+		handler.SendError(c, errno.ErrDatabase, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code":    0,
+		"message": "success",
+		"data":    urls,
+	})
 }
