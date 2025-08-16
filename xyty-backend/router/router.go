@@ -30,8 +30,6 @@ func RouterInit() *gin.Engine {
 		userGroup.PUT("/password", user.ChangePassword)             // 修改密码
 		userGroup.GET("/video-records", user.GetVideoRecords)       // 获取视频记录
 		userGroup.POST("/video-records", user.AddVideoRecord)       // 添加视频记录
-		userGroup.GET("/video-records", user.GetVideoRecords)       // 视频记录查询
-		userGroup.POST("/video-records", user.AddVideoRecord)       // 视频记录添加
 		userGroup.GET("/scenario-records", user.GetScenarioRecords) // 情景记录查询
 		userGroup.POST("/scenario-records", user.AddScenarioRecord) // 情景记录添加
 	}
