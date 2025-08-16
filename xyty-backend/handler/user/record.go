@@ -54,7 +54,7 @@ func GetVideoRecords(c *gin.Context) {
 		Limit(size). // 限制每页条数
 		Offset(offset). // 偏移量（跳过前面的记录）
 		Find(&videoRecords).Error; err != nil {
-		handler.SendError(c, "获取视频记录失败", err.Error())
+		handler.SendError(c, errno.ErrDatabase, err.Error())
 		return
 	}
 
@@ -89,7 +89,7 @@ func AddVideoRecord(c *gin.Context) {
 	record.WatchDate = time.Now().Format("2006-01-02")
 
 	if err := mysql.DB.Create(&record).Error; err != nil {
-		handler.SendError(c, "添加视频记录失败", err.Error())
+		handler.SendError(c, errno.ErrDatabase, err.Error())
 		return
 	}
 
@@ -109,7 +109,7 @@ func AddVideoRecord(c *gin.Context) {
 // @Router /api/v1/user/qiniu-videos [get]
 // @Security ApiKeyAuth
 func GetQiniuVideos(c *gin.Context) {
-	claims, err := auth.ParseRequest(c)
+	_, err := auth.ParseRequest(c)
 	if err != nil {
 		handler.SendError(c, errno.ErrTokenInvalid, err.Error())
 		return
@@ -117,14 +117,14 @@ func GetQiniuVideos(c *gin.Context) {
 
 	scenarioID := c.Query("scenario_id")
 	if scenarioID == "" {
-		handler.SendBadResponse(c, "情景ID不能为空", nil)
+		handler.SendError(c, errno.ErrQuery, "情景ID不能为空")
 		return
 	}
 
 	prefix := "drifting/" + scenarioID + "/"
 	urls, status, err := qiniu.ListFilesByPrefix(prefix)
 	if err != nil || status != 1 {
-		handler.SendError(c, "获取视频列表失败", err.Error())
+		handler.SendError(c, errno.ErrDatabase, err.Error())
 		return
 	}
 
@@ -172,7 +172,7 @@ func GetScenarioRecords(c *gin.Context) {
 		Limit(size).
 		Offset(offset).
 		Find(&scenarioRecords).Error; err != nil {
-		handler.SendError(c, "获取情景体验记录失败", err.Error())
+		handler.SendError(c, errno.ErrDatabase, err.Error())
 		return
 	}
 
@@ -209,7 +209,7 @@ func AddScenarioRecord(c *gin.Context) {
 	record.ExperienceDate = time.Now().Format("2006-01-02")
 
 	if err := mysql.DB.Create(&record).Error; err != nil {
-		handler.SendError(c, "添加情景体验记录失败", err.Error())
+		handler.SendError(c, errno.ErrDatabase, err.Error())
 		return
 	}
 

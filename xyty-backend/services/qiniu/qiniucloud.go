@@ -62,38 +62,44 @@ func UploadToQiNiu(file *multipart.FileHeader, folder string) (int, string) {
 	}
 
 	url := ImgUrl + "/" + ret.Key // 返回上传后的文件访问路径
-return 1, url
+	return 1, url
 }
 
-// ListFilesByPrefix 按前缀查询七牛云存储空间中的文件
-// prefix: 文件前缀，例如"drifting/scenario123/"
-// 返回文件URL列表、状态码和错误信息
+// ListFilesByPrefix 按前缀查询七牛云文件列表
 func ListFilesByPrefix(prefix string) ([]string, int, error) {
 	v := parseyaml.GetYaml()
-	var AccessKey = v.GetString("qiniu.AccessKey")
-	var SerectKey = v.GetString("qiniu.SerectKey")
-	var Bucket = v.GetString("qiniu.Bucket")
-	var ImgUrl = v.GetString("qiniu.ImgUrl")
+	accessKey := v.GetString("qiniu.AccessKey")
+	secretKey := v.GetString("qiniu.SerectKey")
+	bucket := v.GetString("qiniu.Bucket")
+	imgUrl := v.GetString("qiniu.ImgUrl")
 
-	mac := qbox.NewMac(AccessKey, SerectKey)
-	cfg := storage.Config{
-		Zone:          &storage.ZoneHuanan,
-		UseCdnDomains: false,
-		UseHTTPS:      false,
-	}
+	mac := qbox.NewMac(accessKey, secretKey)
+	cfg := storage.Config{UseHTTPS: false}
 	bucketManager := storage.NewBucketManager(mac, &cfg)
 
-	limit := 1000 // 最大查询数量
+	limit := 1000
 	delimiter := ""
 	marker := ""
-	list, _, err := bucketManager.ListFiles(Bucket, prefix, delimiter, marker, limit)
+
+	list, _, nextMarker, hasNext, err := bucketManager.ListFiles(bucket, prefix, delimiter, marker, limit)
 	if err != nil {
-		return nil, 500, err
+		return nil, 0, err
 	}
 
 	var fileUrls []string
-	for _, item := range list.Items {
-		fileUrls = append(fileUrls, ImgUrl + "/" + item.Key)
+	for _, item := range list {
+		fileUrls = append(fileUrls, imgUrl+"/"+item.Key)
+	}
+
+	// 处理分页（如果需要）
+	for hasNext {
+		list, _, nextMarker, hasNext, err = bucketManager.ListFiles(bucket, prefix, delimiter, nextMarker, limit)
+		if err != nil {
+			return nil, 0, err
+		}
+		for _, item := range list {
+			fileUrls = append(fileUrls, imgUrl+"/"+item.Key)
+		}
 	}
 
 	return fileUrls, 1, nil

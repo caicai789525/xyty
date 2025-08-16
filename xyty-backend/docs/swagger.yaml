@@ -392,6 +392,44 @@ paths:
       summary: 获取用户个人资料
       tags:
       - user
+  /api/v1/user/qiniu-videos:
+    get:
+      consumes:
+      - application/json
+      description: 根据情景ID获取七牛云存储的视频文件列表
+      parameters:
+      - description: 情景ID
+        in: query
+        name: scenario_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  items:
+                    type: string
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取七牛云视频列表
+      tags:
+      - user
   /api/v1/user/scenario-records:
     get:
       consumes:
