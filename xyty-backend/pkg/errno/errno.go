@@ -32,15 +32,18 @@ func (err *Err) Addf(format string, args ...interface{}) error {
 	return err
 }
 
+// 自定义错误信息
 func (err *Err) Error() string {
 	return fmt.Sprintf("Err - code: %d, message: %s, error: %s", err.Code, err.Message, err.Err)
 }
 
+// 未查询到用户信息
 func IsErrUserNotFound(err error) bool {
 	code, _ := DecodeErr(err)
 	return code == ErrUserNotFound.Code
 }
 
+// 解码错误码
 func DecodeErr(err error) (int, string) {
 	if err == nil {
 		return OK.Code, OK.Message

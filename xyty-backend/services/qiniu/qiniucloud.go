@@ -2,10 +2,12 @@ package qiniu
 
 import (
 	"context"
-	"github.com/qiniu/go-sdk/v7/auth/qbox"
-	"github.com/qiniu/go-sdk/v7/storage"
+	"fmt"
 	"ini/services/parseyaml"
 	"mime/multipart"
+
+	"github.com/qiniu/go-sdk/v7/auth/qbox"
+	"github.com/qiniu/go-sdk/v7/storage"
 )
 
 // 上传图片到七牛云，然后返回状态和图片的url
@@ -88,7 +90,12 @@ func ListFilesByPrefix(prefix string) ([]string, int, error) {
 
 	var fileUrls []string
 	for _, item := range list {
-		fileUrls = append(fileUrls, imgUrl+"/"+item.Key)
+		// 确保 URL 格式正确，避免双斜杠
+		if len(imgUrl) > 0 && imgUrl[len(imgUrl)-1] == '/' {
+			fileUrls = append(fileUrls, imgUrl+item.Key)
+		} else {
+			fileUrls = append(fileUrls, imgUrl+"/"+item.Key)
+		}
 	}
 
 	// 处理分页（如果需要）
@@ -98,9 +105,112 @@ func ListFilesByPrefix(prefix string) ([]string, int, error) {
 			return nil, 0, err
 		}
 		for _, item := range list {
-			fileUrls = append(fileUrls, imgUrl+"/"+item.Key)
+			// 确保 URL 格式正确，避免双斜杠
+			if len(imgUrl) > 0 && imgUrl[len(imgUrl)-1] == '/' {
+				fileUrls = append(fileUrls, imgUrl+item.Key)
+			} else {
+				fileUrls = append(fileUrls, imgUrl+"/"+item.Key)
+			}
 		}
 	}
 
 	return fileUrls, 1, nil
+}
+
+// GetFileURL 获取指定文件的访问外链
+// key: 文件的完整存储路径
+// isPrivate: 是否为私有空间
+// expire: 外链有效期（秒），仅当 isPrivate 为 true 时有效
+func GetFileURL(key string, isPrivate bool, expire int64) (string, error) {
+	v := parseyaml.GetYaml()
+	accessKey := v.GetString("qiniu.AccessKey")
+	secretKey := v.GetString("qiniu.SerectKey")
+	bucket := v.GetString("qiniu.Bucket")
+	imgUrl := v.GetString("qiniu.ImgUrl")
+
+	// 检查配置是否完整
+	if accessKey == "" || secretKey == "" || bucket == "" || imgUrl == "" {
+		return "", fmt.Errorf("七牛云配置不完整")
+	}
+
+	// 检查文件路径是否为空
+	if key == "" {
+		return "", fmt.Errorf("文件路径不能为空")
+	}
+
+	mac := qbox.NewMac(accessKey, secretKey)
+
+	// 对于公开空间，直接拼接 URL
+	if !isPrivate {
+		// 确保 URL 格式正确，避免双斜杠
+		if len(imgUrl) > 0 && imgUrl[len(imgUrl)-1] == '/' {
+			return imgUrl + key, nil
+		}
+		return imgUrl + "/" + key, nil
+	}
+
+	// 对于私有空间，生成带签名的临时外链
+	if expire <= 0 {
+		expire = 3600 // 默认 1 小时
+	}
+
+	domain := imgUrl
+	privateURL := storage.MakePrivateURL(mac, domain, key, expire)
+	return privateURL, nil
+}
+
+// GetFileURLs 批量获取文件的访问外链
+// keys: 文件的完整存储路径列表
+// isPrivate: 是否为私有空间
+// expire: 外链有效期（秒），仅当 isPrivate 为 true 时有效
+func GetFileURLs(keys []string, isPrivate bool, expire int64) ([]string, error) {
+	v := parseyaml.GetYaml()
+	accessKey := v.GetString("qiniu.AccessKey")
+	secretKey := v.GetString("qiniu.SerectKey")
+	bucket := v.GetString("qiniu.Bucket")
+	imgUrl := v.GetString("qiniu.ImgUrl")
+
+	// 检查配置是否完整
+	if accessKey == "" || secretKey == "" || bucket == "" || imgUrl == "" {
+		return nil, fmt.Errorf("七牛云配置不完整")
+	}
+
+	// 检查文件路径列表是否为空
+	if len(keys) == 0 {
+		return nil, fmt.Errorf("文件路径列表不能为空")
+	}
+
+	mac := qbox.NewMac(accessKey, secretKey)
+	var urls []string
+
+	// 对于公开空间，直接拼接 URL
+	if !isPrivate {
+		for _, key := range keys {
+			if key == "" {
+				continue
+			}
+			// 确保 URL 格式正确，避免双斜杠
+			if len(imgUrl) > 0 && imgUrl[len(imgUrl)-1] == '/' {
+				urls = append(urls, imgUrl+key)
+			} else {
+				urls = append(urls, imgUrl+"/"+key)
+			}
+		}
+	} else {
+		// 对于私有空间，生成带签名的临时外链
+		if expire <= 0 {
+			expire = 3600 // 默认 1 小时
+		}
+
+		domain := imgUrl
+		for _, key := range keys {
+			if key == "" {
+				continue
+			}
+			privateURL := storage.MakePrivateURL(mac, domain, key, expire)
+			urls = append(urls, privateURL)
+		}
+	}
+
+	return urls, nil
 }

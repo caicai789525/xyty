@@ -67,7 +67,7 @@ func SendLoginCode(addr string) error {
 	em.To = []string{addr}
 
 	// 设置主题
-	em.Subject = "偶遇华夏登录验证码"
+	em.Subject = "芗韵同音登录验证码"
 
 	// 简单设置文件发送的内容
 	em.Text = []byte(code)

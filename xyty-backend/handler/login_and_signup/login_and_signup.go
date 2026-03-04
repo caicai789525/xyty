@@ -8,7 +8,7 @@ import (
 	model "ini/model/user_struct"
 )
 
-// @Summary 新用户注册
+// Signup @Summary 新用户注册
 // @Description 新用户进行注册
 // @Tags signup
 // @Accepts application/json
@@ -33,7 +33,7 @@ func Signup(c *gin.Context) {
 	return
 }
 
-// @Summary 账号密码登录
+// LoginWithPwd @Summary 账号密码登录
 // @Description 登录并获得token
 // @Tags login
 // @Accept application/json
@@ -66,7 +66,7 @@ func LoginWithPwd(c *gin.Context) {
 	return
 }
 
-// @Summary 发送邮箱验证码
+// SendCode @Summary 发送邮箱验证码
 // @Description 向用户提供的邮箱地址发送一个验证码
 // @Tags login
 // @Accepts application/json
@@ -91,7 +91,7 @@ func SendCode(c *gin.Context) {
 	return
 }
 
-// @Summary 邮箱验证码登录
+// LoginWithCode @Summary 邮箱验证码登录
 // @Description 通过邮箱验证码登录，验证码正确则获得token（注：该接口用于发送验证码之后）
 // @Tags login
 // @Accepts application/json

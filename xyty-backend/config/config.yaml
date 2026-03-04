@@ -14,5 +14,5 @@ mail:
 qiniu:
   AccessKey: GRsClS7z_4P9nHfc7I-iYLdiKZ4xu204V9OOJNsI
   SerectKey: wUJ-hAztt5LUkl-2TZSfDo-0NhE53S1CNxMl9bi9
-  Bucket: xyty
-  ImgUrl: http://xyty.size/
+  Bucket: xyty1
+  ImgUrl: http://xyty.site/

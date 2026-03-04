@@ -24,4 +24,7 @@ var (
 	// mail errors
 	ErrMailUsed     = &Errno{Code: 50001, Message: "The mail was used."}
 	ErrMailNotExist = &Errno{Code: 50002, Message: "The mail was not exist."}
+
+	ErrMailCodeIncorrect = &Errno{Code: 50003, Message: "The mail code was incorrect."}
+	ErrMailCodeExpired   = &Errno{Code: 50004, Message: "The mail code was expired."}
 )

@@ -12,17 +12,17 @@ type User struct {
 	UpdatedAt time.Time  `json:"updated_at"`              // 更新时间
 	DeletedAt *time.Time `json:"deleted_at" gorm:"index"` // 软删除标记（*time.Time 兼容 GORM 软删除）
 
-	Username string `json:"username" gorm:"primarykey" gorm:"size:30"`  // 用户名（主键）
+	Username string `json:"username" gorm:"unique" gorm:"size:30"`  // 用户名（唯一）
 	Password string `json:"password" gorm:"size:30"`                    // 密码
-	MailAddr string `json:"mail_addr" gorm:"primarykey" gorm:"size:30"` // 邮箱地址（主键）
+	MailAddr string `json:"mail_addr" gorm:"unique" gorm:"size:30"` // 邮箱地址（唯一）
 	Avatar   string `json:"avatar" gorm:"size:255"`                     // 头像字段
 }
 
 type UserCode struct {
 	gorm.Model
-	Username string `json:"username" gorm:"primarykey" gorm:"size:30"`
-	MailAddr string `json:"mail_addr" gorm:"primarykey"`
-	Code     string `json:"code" gorm:"primarykey"`
+	Username string `json:"username" gorm:"size:30"`
+	MailAddr string `json:"mail_addr" gorm:"size:50"`
+	Code     string `json:"code" gorm:"size:6"`
 }
 
 type VideoRecord struct {
