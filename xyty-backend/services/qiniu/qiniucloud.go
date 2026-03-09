@@ -201,7 +201,6 @@ func GetFileURLs(keys []string, isPrivate bool, expire int64) ([]string, error) 
 		if expire <= 0 {
 			expire = 3600 // 默认 1 小时
 		}
-
 		domain := imgUrl
 		for _, key := range keys {
 			if key == "" {
