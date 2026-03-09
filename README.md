@@ -110,5 +110,5 @@ xyty-backend/
 本项目采用 MIT 许可证。
 
 ## 联系我们
-- 联系人: KitZhangYs
-- 邮箱: SJMbaiyang@163.com
+- 联系人: 蔡宗谚（蔡宗諺）
+- 邮箱: kevin13537412565@163.com
